@@ -1,0 +1,72 @@
+version: '2'
+
+services:
+  drone-server:
+    image: drone/drone:0.8
+    expose:
+      - 8000
+    ports:
+      - 8000:8000
+      - 9000:9000
+    volumes:
+      - drone-data:/var/lib/drone/
+    restart: unless-stopped
+    networks:
+      - service
+    labels:
+      - "traefik.frontend.rule=Host:drone.${MYDOMAIN}"
+      - "traefik.port=8000"
+    environment:
+      - DRONE_OPEN=true
+      - DRONE_HOST=https://drone.${MYDOMAIN}
+      - DRONE_GITHUB=true
+      - DRONE_GITHUB_CLIENT=${DRONE_GITHUB_CLIENT}
+      - DRONE_GITHUB_SECRET=${DRONE_GITHUB_SECRET}
+      - DRONE_GOGS=false
+      - DRONE_GOGS_URL=https://gogs.${MYDOMAIN}
+      - DRONE_SECRET=bidule44
+
+  drone-agent:
+    image: drone/agent:0.8
+    command: agent
+    restart: unless-stopped
+    networks:
+      - service
+    depends_on:
+      - drone-server
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DRONE_SERVER=drone-server:9000
+      - DRONE_SECRET=bidule44
+
+  jenkins:
+    restart: unless-stopped
+    image: jenkins/jenkins:2.89.4
+    container_name: jenkins
+    labels:
+      - "traefik.frontend.rule=Host:jenkins.${MYDOMAIN}"
+      - "traefik.port=8080" 
+    networks:
+      - service
+    volumes:
+      - jenkins_home:/var/jenkins_home
+    ports:
+      - 8080:8080
+      - 50000:50000
+
+volumes:
+  drone-data:
+    driver: nfs
+    driver_opts: 
+      share: 172.17.0.1/srv/data/volumes/drone-data
+  jenkins_home:
+    driver: nfs
+    driver_opts:
+      share: 172.17.0.1/srv/data/volumes/jenkins_home
+
+networks:
+  service:
+    external:
+      name: service
+
