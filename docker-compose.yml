@@ -42,7 +42,7 @@ services:
 
   jenkins:
     restart: unless-stopped
-    image: jenkins/jenkins:2.89.4
+    image: jenkins/jenkins:2.107.2
     container_name: jenkins
     labels:
       - "traefik.frontend.rule=Host:jenkins.${MYDOMAIN}"
@@ -55,7 +55,31 @@ services:
       - 8080:8080
       - 50000:50000
 
+  gogs:
+    restart: unless-stopped
+    image: gogs/gogs:0.11.43
+    volumes:
+      - gogs-data:/data
+    container_name: gogs
+    labels:
+      - "traefik.frontend.rule=Host:gogs.${MYDOMAIN}"
+    expose:
+      - 3000
+      - 2222
+    ports:
+      - "3000:3000"
+      - "2222:2222"
+    extra_hosts:
+      - local:172.17.0.1
+    networks:
+      - service
+
+
 volumes:
+  gogs-data:
+    driver: nfs
+    driver_opts: 
+      share: 172.17.0.1/srv/data/volumes/gogs
   drone-data:
     driver: nfs
     driver_opts: 
