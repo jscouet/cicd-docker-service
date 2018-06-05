@@ -1,9 +1,4 @@
-version: '2'
-
-environment:
-  - DRONE_VERSION=0.8
-  - JENKINS_VERSION=2.107.3
-  - GOGS_VERSION=0.11.53
+version: '2.3'
 
 
 services:
@@ -68,6 +63,7 @@ services:
     container_name: gogs
     labels:
       - "traefik.frontend.rule=Host:gogs.${MYDOMAIN}"
+      - "traefik.port=3000"
     expose:
       - 3000
       - 2222
