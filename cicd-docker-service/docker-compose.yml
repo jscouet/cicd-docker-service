@@ -53,7 +53,6 @@ services:
     volumes:
       - jenkins_home:/var/jenkins_home
     ports:
-      - 8080:8080
       - 50000:50000
 
   gogs:
@@ -68,7 +67,6 @@ services:
       - 3000
       - 2222
     ports:
-      - "3000:3000"
       - "2222:2222"
     extra_hosts:
       - local:172.17.0.1
