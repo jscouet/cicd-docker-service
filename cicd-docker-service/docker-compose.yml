@@ -1,9 +1,14 @@
 version: '2'
 
+environment:
+  - DRONE_VERSION=0.8
+  - JENKINS_VERSION=2.107.3
+  - GOGS_VERSION=0.11.53
+
 
 services:
   drone-server:
-    image: drone/drone:0.8
+    image: drone/drone:${DRONE_VERSION}
     expose:
       - 8000
     ports:
@@ -28,9 +33,9 @@ services:
       - DRONE_SECRET=bidule44
 
   drone-agent:
-    image: drone/agent:0.8
+    image: drone/agent:${DRONE_VERSION}
     command: agent
-    restart: unless-stopped
+    Nrestart: unless-stopped
     networks:
       - service
     depends_on:
@@ -43,7 +48,7 @@ services:
 
   jenkins:
     restart: unless-stopped
-    image: jenkins/jenkins:2.107.3
+    image: jenkins/jenkins:${JENKINS_VERSION}
     container_name: jenkins
     labels:
       - "traefik.frontend.rule=Host:jenkins.${MYDOMAIN}"
@@ -57,7 +62,7 @@ services:
 
   gogs:
     restart: unless-stopped
-    image: gogs/gogs:0.11.43
+    image: gogs/gogs:${GOGS_VERSION}
     volumes:
       - gogs-data:/data
     container_name: gogs
