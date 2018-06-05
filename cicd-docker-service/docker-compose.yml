@@ -1,5 +1,6 @@
 version: '2'
 
+
 services:
   drone-server:
     image: drone/drone:0.8
@@ -42,7 +43,7 @@ services:
 
   jenkins:
     restart: unless-stopped
-    image: jenkins/jenkins:2.107.2
+    image: jenkins/jenkins:2.107.3
     container_name: jenkins
     labels:
       - "traefik.frontend.rule=Host:jenkins.${MYDOMAIN}"
