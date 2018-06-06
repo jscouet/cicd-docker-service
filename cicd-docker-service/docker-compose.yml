@@ -89,9 +89,9 @@ services:
       - "traefik.port=3000"
     expose:
       - 3000
-      - 2222
+      - 3222
     ports:
-      - "2222:2222"
+      - "3222:3222"
     extra_hosts:
       - local:172.17.0.1
     networks:
