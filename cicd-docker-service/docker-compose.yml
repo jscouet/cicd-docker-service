@@ -33,7 +33,7 @@ services:
     container_name: drone-agent
     image: drone/agent:${DRONE_VERSION}
     command: agent
-    Nrestart: unless-stopped
+    restart: unless-stopped
     networks:
       - service
     depends_on:
@@ -78,7 +78,31 @@ services:
       - service
 
 
+  gitea:
+    restart: unless-stopped
+    image: gitea/gitea:${GITEA_VERSION}
+    volumes:
+      - gitea-data:/data
+    container_name: gitea
+    labels:
+      - "traefik.frontend.rule=Host:gitea.${MYDOMAIN}"
+      - "traefik.port=3000"
+    expose:
+      - 3000
+      - 2222
+    ports:
+      - "2222:2222"
+    extra_hosts:
+      - local:172.17.0.1
+    networks:
+      - service
+
+
 volumes:
+  gitea-data:
+    driver: nfs
+    driver_opts: 
+      share: 172.17.0.1/srv/data/volumes/gitea-data
   gogs-data:
     driver: nfs
     driver_opts: 
