@@ -1,8 +1,10 @@
 version: '2.3'
 
+# see .env file for version variable
 
 services:
   drone-server:
+    container_name: drone-server
     image: drone/drone:${DRONE_VERSION}
     expose:
       - 8000
@@ -28,6 +30,7 @@ services:
       - DRONE_SECRET=bidule44
 
   drone-agent:
+    container_name: drone-agent
     image: drone/agent:${DRONE_VERSION}
     command: agent
     Nrestart: unless-stopped
