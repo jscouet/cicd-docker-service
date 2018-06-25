@@ -4,7 +4,7 @@ version: '3.2'
 
 services:
   drone-server:
-    image: drone/drone:${DRONE_VERSION}
+    image: drone/drone:0.8
     expose:
       - 8000
     ports:
@@ -30,7 +30,7 @@ services:
       - DRONE_SECRET=bidule44
 
   drone-agent:
-    image: drone/agent:${DRONE_VERSION}
+    image: drone/agent:0.8
     command: agent
     restart: unless-stopped
     networks:
@@ -45,7 +45,7 @@ services:
 
   jenkins:
     restart: unless-stopped
-    image: jenkins/jenkins:${JENKINS_VERSION}
+    image: jenkins/jenkins:2.107.3
     container_name: jenkins
     deploy:
         labels:
@@ -60,7 +60,7 @@ services:
 
   gogs:
     restart: unless-stopped
-    image: gogs/gogs:${GOGS_VERSION}
+    image: gogs/gogs:0.11.53
     volumes:
       - gogs-data:/data
     container_name: gogs
@@ -81,7 +81,7 @@ services:
 
   gitea:
     restart: unless-stopped
-    image: gitea/gitea:${GITEA_VERSION}
+    image: gitea/gitea:1.4.2
     volumes:
       - gitea-data:/data
     container_name: gitea
