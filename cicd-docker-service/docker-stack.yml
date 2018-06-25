@@ -1,0 +1,125 @@
+version: '3.2'
+
+# see .env file for version variable
+
+services:
+  drone-server:
+    image: drone/drone:${DRONE_VERSION}
+    expose:
+      - 8000
+    ports:
+      - 8000:8000
+      - 9000:9000
+    volumes:
+      - drone-data:/var/lib/drone/
+    restart: unless-stopped
+    networks:
+      - service
+    deploy:
+        labels:
+        - "traefik.frontend.rule=Host:drone.${MYDOMAIN}"
+        - "traefik.port=8000"
+    environment:
+      - DRONE_OPEN=true
+      - DRONE_HOST=https://drone.${MYDOMAIN}
+      - DRONE_GITHUB=true
+      - DRONE_GITHUB_CLIENT=${DRONE_GITHUB_CLIENT}
+      - DRONE_GITHUB_SECRET=${DRONE_GITHUB_SECRET}
+      - DRONE_GOGS=false
+      - DRONE_GOGS_URL=https://gogs.${MYDOMAIN}
+      - DRONE_SECRET=bidule44
+
+  drone-agent:
+    image: drone/agent:${DRONE_VERSION}
+    command: agent
+    restart: unless-stopped
+    networks:
+      - service
+    depends_on:
+      - drone-server
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DRONE_SERVER=drone-server:9000
+      - DRONE_SECRET=bidule44
+
+  jenkins:
+    restart: unless-stopped
+    image: jenkins/jenkins:${JENKINS_VERSION}
+    container_name: jenkins
+    deploy:
+        labels:
+        - "traefik.frontend.rule=Host:jenkins.${MYDOMAIN}"
+        - "traefik.port=8080" 
+    networks:
+      - service
+    volumes:
+      - jenkins_home:/var/jenkins_home
+    ports:
+      - 50000:50000
+
+  gogs:
+    restart: unless-stopped
+    image: gogs/gogs:${GOGS_VERSION}
+    volumes:
+      - gogs-data:/data
+    container_name: gogs
+    deploy:
+        labels:
+        - "traefik.frontend.rule=Host:gogs.${MYDOMAIN}"
+        - "traefik.port=3000"
+    expose:
+      - 3000
+      - 2222
+    ports:
+      - "2222:2222"
+    extra_hosts:
+      - local:172.17.0.1
+    networks:
+      - service
+
+
+  gitea:
+    restart: unless-stopped
+    image: gitea/gitea:${GITEA_VERSION}
+    volumes:
+      - gitea-data:/data
+    container_name: gitea
+    deploy:
+        labels:
+        - "traefik.frontend.rule=Host:gitea.${MYDOMAIN}"
+        - "traefik.port=3000"
+    expose:
+      - 3000
+      - 3222
+    ports:
+      - "3222:3222"
+    extra_hosts:
+      - local:172.17.0.1
+    networks:
+      - service
+
+
+volumes:
+  gitea-data:
+    driver: nfs
+    driver_opts: 
+      share: 172.17.0.1/srv/data/volumes/gitea-data
+  gogs-data:
+    driver: nfs
+    driver_opts: 
+      share: 172.17.0.1/srv/data/volumes/gogs
+  drone-data:
+    driver: nfs
+    driver_opts: 
+      share: 172.17.0.1/srv/data/volumes/drone-data
+  jenkins_home:
+    driver: nfs
+    driver_opts:
+      share: 172.17.0.1/srv/data/volumes/jenkins_home
+
+networks:
+  service:
+    external:
+      name: swarm-service
+
