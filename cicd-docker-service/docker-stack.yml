@@ -10,8 +10,12 @@ services:
     expose:
       - 8000
     ports:
-      - 8000:8000
-      - 9000:9000
+      - mode: host
+        published: 8000
+        target: 8000
+      - mode: host
+        published: 9000
+        target: 9000
     volumes:
       - drone-data:/var/lib/drone/
     restart: unless-stopped
@@ -56,7 +60,9 @@ services:
     volumes:
       - jenkins_home:/var/jenkins_home
     ports:
-      - 50000:50000
+      - mode: host
+        published: 50000
+        target: 50000
 
   gogs:
     restart: unless-stopped
@@ -74,7 +80,9 @@ services:
       - 3000
       - 2222
     ports:
-      - "2222:2222"
+      - mode: host
+        published: 2222
+        target: 2222
     extra_hosts:
       - local:172.17.0.1
 
@@ -95,7 +103,9 @@ services:
       - 3000
       - 3222
     ports:
-      - "3222:3222"
+      - mode: host
+        published: 3222
+        target: 3222
     extra_hosts:
       - local:172.17.0.1
 
