@@ -5,6 +5,8 @@ version: '3.2'
 services:
   drone-server:
     image: drone/drone:0.8
+    networks:
+      - service
     expose:
       - 8000
     ports:
@@ -13,8 +15,6 @@ services:
     volumes:
       - drone-data:/var/lib/drone/
     restart: unless-stopped
-    networks:
-      - service
     deploy:
         labels:
         - "traefik.frontend.rule=Host:drone.${MYDOMAIN}"
@@ -68,6 +68,8 @@ services:
         labels:
         - "traefik.frontend.rule=Host:gogs.${MYDOMAIN}"
         - "traefik.port=3000"
+    networks:
+      - service
     expose:
       - 3000
       - 2222
@@ -75,8 +77,6 @@ services:
       - "2222:2222"
     extra_hosts:
       - local:172.17.0.1
-    networks:
-      - service
 
 
   gitea:
@@ -89,6 +89,8 @@ services:
         labels:
         - "traefik.frontend.rule=Host:gitea.${MYDOMAIN}"
         - "traefik.port=3000"
+    networks:
+      - service
     expose:
       - 3000
       - 3222
@@ -96,9 +98,6 @@ services:
       - "3222:3222"
     extra_hosts:
       - local:172.17.0.1
-    networks:
-      - service
-
 
 volumes:
   gitea-data:
