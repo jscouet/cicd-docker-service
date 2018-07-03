@@ -89,7 +89,7 @@ services:
 
   gitea:
     restart: unless-stopped
-    image: gitea/gitea:1.4.2
+    image: gitea/gitea:1.4.3
     volumes:
       - gitea-data:/data
     container_name: gitea
